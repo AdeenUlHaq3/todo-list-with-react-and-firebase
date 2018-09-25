@@ -52,7 +52,7 @@ class App extends Component {
       date: new Date().toLocaleDateString(),
       time: new Date().toLocaleTimeString()
     })
-    swal('Success', 'Todo Added');
+    swal('Success', 'TodoAdded');
     this.setState({ text: '' })
   }
 
@@ -66,8 +66,11 @@ class App extends Component {
         
       }
     })
-    swal('Success', 'Todo Updated');
-    this.setState({ text: '' })
+    swal('Success', 'TodoUpdated');
+    this.setState({
+      text: '',
+      todos: todos
+    })
   }
   
   deleteTodo(key) {
@@ -78,7 +81,7 @@ class App extends Component {
         todos.splice(index, 1);
       }
     })
-    swal('Success', 'Todo Deleted');
+    swal('Success', 'TodoDeleted');
     this.setState({ todos })
   }
 
@@ -87,14 +90,14 @@ class App extends Component {
     
     return (
       <div className="App">
-        <h1>todoList</h1>
+        <h1>TodoList</h1>
         <input className='form-control' placeholder='Todo' value={ text } onChange={ this.handleChange } />
         {
           isUpdate
           ?
-          <input className='btn btn-danger' onClick={ this.editTodo } type='button' value='Update Todo'/>
+          <input className='btn btn-danger' onClick={ this.editTodo } type='button' value='UpdateTodo'/>
           :
-          <input className='btn btn-danger' onClick={ this.addTodo } type='button' value='Add Todo'/>
+          <input className='btn btn-danger' onClick={ this.addTodo } type='button' value='AddTodo'/>
         }
         <ol>
           {
