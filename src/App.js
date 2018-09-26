@@ -40,7 +40,7 @@ class App extends Component {
     const { todos } = this.state;
     firebase.database().ref('todos')
       .on(`child_added`, (snapshot) => {
-        todos.push(snapshot);
+        todos.push({val: snapshot.val(), key: snapshot.key});
         this.setState({ todos });
       });
   }
@@ -52,8 +52,10 @@ class App extends Component {
       date: new Date().toLocaleDateString(),
       time: new Date().toLocaleTimeString()
     })
-    swal('Success', 'TodoAdded');
-    this.setState({ text: '' })
+    .then(() => {
+      swal('Success', 'TodoAdded');
+      this.setState({ text: '' });
+    })
   }
 
   editTodo() {
@@ -61,28 +63,32 @@ class App extends Component {
     firebase.database().ref(`todos/${keyForUpdate}`).update({
       title: text
     })
-    todos.map((todo, index) => {
-      if(todo.key === keyForUpdate){
-        
-      }
-    })
-    swal('Success', 'TodoUpdated');
-    this.setState({
-      text: '',
-      todos: todos
+    .then(() => {
+      todos.map(todo => {
+        if(todo.key === keyForUpdate){
+          todo.val.title = text
+        }
+      })
+      swal('Success', 'TodoUpdated');
+      this.setState({
+        text: '',
+        todos
+      })
     })
   }
   
   deleteTodo(key) {
     const { todos } = this.state;
-    firebase.database().ref(`todos/${key}`).remove();
-    todos.map((todo, index) => {
-      if(todo.key === key){
-        todos.splice(index, 1);
-      }
-    })
-    swal('Success', 'TodoDeleted');
-    this.setState({ todos })
+    firebase.database().ref(`todos/${key}`).remove()
+      .then(() => {
+        todos.map((todo, index) => {
+          if(todo.key === key){
+            todos.splice(index, 1);
+          }
+        })
+        swal('Success', 'TodoDeleted');
+        this.setState({ todos });
+      })
   }
 
   render() {
@@ -103,9 +109,9 @@ class App extends Component {
           {
             todos.map(todo => 
             <li key={todo.key}>
-              <span>{ todo.val().title }</span>
+              <span>{ todo.val.title }</span>
               <button className='fa fa-trash' onClick={ this.deleteTodo.bind(this, todo.key) }></button>
-              <button className='fa fa-edit' onClick={ this.beforeEditTodo.bind(this, todo.key, todo.val().title) }></button>
+              <button className='fa fa-edit' onClick={ this.beforeEditTodo.bind(this, todo.key, todo.val.title) }></button>
             </li>)
           }
         </ol>
